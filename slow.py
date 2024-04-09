@@ -8,9 +8,9 @@ SELECT *
 FROM
 (
 BikeList JOIN BikeCost
-ON 1=1
+ON pgp_sym_decrypt(BikeList.BikeSerialCodeHash::bytea, 'key') = BikeCost.BikeSerialCodeHash
 )
-WHERE pgp_sym_decrypt(BikeList.BikeSerialCodeHash::bytea, 'key') = BikeCost.BikeSerialCodeHash AND BikeList.BikeName LIKE 'Name%';
+WHERE BikeList.BikeName LIKE 'Name%';
 """)
 
 try:
