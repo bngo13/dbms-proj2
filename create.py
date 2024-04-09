@@ -22,6 +22,11 @@ CREATE TABLE IF NOT EXISTS BikeCost (
 );
 """)
 
+clean_database = sql.SQL("""
+DROP TABLE BikeList;
+DROP TABLE BikeCost;
+""")
+
 def create_table_in_database(db_url):
     try:
         # Connect to the database using the database URL
@@ -29,6 +34,7 @@ def create_table_in_database(db_url):
         cur = conn.cursor()
         
         # Execute the create table command
+        cur.execute(clean_database)
         cur.execute(create_table_command)
         
         # Commit the changes
