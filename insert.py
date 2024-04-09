@@ -2,7 +2,7 @@ import uuid
 import psycopg2
 from psycopg2 import sql
 
-iterations = 100
+iterations = 5000
 DATABASE_URL = "postgres://pdtyayje:LwPTxm21oU5kSA7WU1Z_IxHsz3hhohMz@bubble.db.elephantsql.com/pdtyayje"
 
 insert_bikelist = sql.SQL("""
@@ -13,14 +13,21 @@ insert_bikecost = sql.SQL("""
 INSERT INTO BikeCost (BikeSerialCodeHash, BikeCost) VALUES (%s, %s)
 """)
 
+serialList = []
+serialList2 = []
+
 try:
     conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
+
     for i in range(0, iterations):
         # Generate a serial code for a long string
         serialCode = str(uuid.uuid4()).replace('-', '')
-        cur.execute(insert_bikelist, (serialCode, "Name" + str(i), "Type" + str(i)))
-        cur.execute(insert_bikecost, (serialCode, i * 100))
+        serialList.append((serialCode, "Name" + str(i), "Type" + str(i)))
+        serialList2.append((serialCode, str(i)))
+
+    cur.executemany(insert_bikelist, serialList)
+    cur.executemany(insert_bikecost, serialList2)
     conn.commit()
 
 except psycopg2.DatabaseError as e:
